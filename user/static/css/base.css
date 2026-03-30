@@ -1,0 +1,88 @@
+body {
+    background-color: #F6EBC8; /* 1. 요청하신 배경색 */
+    margin: 0;
+    display: flex;
+    justify-content: center; /* 2. 가로 중앙 정렬 */
+    align-items: center;    /* 2. 세로 중앙 정렬 */
+    min-height: 100vh;      /* 화면 전체 높이 사용 */
+    font-family: 'Pretendard', sans-serif; /* 세련된 폰트 권장 */
+    color: #4A4A4A;         /* 부드러운 진회색 글씨 */
+}
+
+/* 모든 페이지의 콘텐츠를 담는 컨테이너 */
+.container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 20px;    /* 아기자기한 둥근 모서리 */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* 은은한 그림자 */
+    width: 100%;
+    max-width: 400px;       /* 적절한 박스 너비 */
+    text-align: center;
+}
+
+/* 입력창 스타일 */
+input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+/* 메인 버튼 스타일 */
+.main-btn {
+    width: 100%;
+    background-color: #D4A373;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* 홈 화면용 보조 버튼 색상 */
+.main-btn.secondary {
+    background-color: #CCD5AE;
+}
+
+
+/* Header 전체 스타일 */
+.main-header {
+    position: fixed; /* 화면 상단에 고정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 30px; /* 여백 */
+    box-sizing: border-box;
+    background-color: transparent; /* 배경색 투명 (배경색은 body가 담당) */
+    z-index: 1000; /* 다른 요소 위에 뜨도록 */
+}
+
+/* 홈 링크 스타일 */
+.home-link {
+    text-decoration: none;
+    color: #4A4A4A; /* 부드러운 진회색 */
+    display: flex;
+    align-items: center;
+    transition: color 0.3s;
+}
+
+.home-link:hover {
+    color: #D4A373; /* 포인트 브라운 */
+}
+
+/* 아이콘 스타일 */
+.home-icon {
+    font-size: 1.5em; /* 크기 살짝 키우기 */
+    margin-right: 8px; /* 글씨와의 간격 */
+}
+
+/* 글씨 스타일 */
+.home-text {
+    font-weight: bold; /* 굵게 */
+    font-size: 1.2em;   /* 크기 살짝 키우기 */
+}
