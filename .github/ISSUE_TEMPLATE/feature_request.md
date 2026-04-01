@@ -1,20 +1,22 @@
----
-name: Feature request
-about: 2w Toy Project
-title: ''
+name: 'Issue: 이슈 생성 템플릿'
+about: 해당 이슈 생성 템플릿을 사용하여 이슈를 생성해주세요.
+title: 깃모지 [태그] 이슈 요약
 labels: ''
 assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+<!-- 이슈 제목은 "깃모지 [태그] 이슈 요약" 형식으로 작성해주세요 -->
+<!-- ex) ✨ [FEAT] 로그인 API 구현 -->
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+## 📄 이슈 요약
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+> 로그인 API를 구현합니다.
+> 
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## ✅ 작업 항목
+
+<!-- 이슈 해결을 위해 필요한 작업 목록을 작성해주세요 -->
+
+- [ ]  작업 1
+- [ ]  작업 2
