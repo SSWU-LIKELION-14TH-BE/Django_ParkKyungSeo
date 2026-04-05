@@ -1,0 +1,21 @@
+{% for post in posts %}
+<div class="post-item">
+    <h3>
+        <a href="{% url 'post_detail' post.pk %}" style="text-decoration: none; color: #333;">
+            {{ post.title }}
+        </a>
+    </h3>
+
+    <p>작성자: {{ post.author.nickname }}</p>
+
+    <p>기술 스택:
+        {% for stack in post.tech_stacks.all %}
+        <span>#{{ stack.name }} </span>
+        {% endfor %}
+    </p>
+
+    {% if post.github_url %}
+    <a href="{{ post.github_url }}" target="_blank">GitHub 바로가기</a>
+    {% endif %}
+</div>
+{% endfor %}
