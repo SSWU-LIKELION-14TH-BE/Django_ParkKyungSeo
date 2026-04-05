@@ -10,10 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+# settings.py 최상단
+import os
 from pathlib import Path
+from dotenv import load_dotenv 
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# BASE_DIR 정의 바로 아래나 위에 작성
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, '.env')) # 2. .env 파일 경로를 명시적으로 지정
 
 
 # Quick-start development settings - unsuitable for production
@@ -123,5 +127,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'cat4279915@gmail.com'
-EMAIL_HOST_PASSWORD = 'oqldtfaheyxyoiji' # 구글 2단계 인증 후 발급받은 비밀번호
+
+# 직접 입력된 값을 아래와 같이 환경 변수에서 가져오도록 수정
+EMAIL_HOST_USER = os.getenv('EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+
+# 발신자 기본 이메일 설정도 추가해주면 좋습니다.
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
