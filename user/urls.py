@@ -7,7 +7,12 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     
-    path('password-reset/verify/', views.password_reset_confirm, name='password_reset'), 
+    # 1단계: 이메일 입력 페이지
+    path('password-reset/', views.password_reset_view, name='password_reset'),
+    
+    # 2단계: 인증번호 및 새 비밀번호 입력 페이지
+    path('password-reset/verify/', views.password_reset_confirm, name='password_reset_verify'),
+
 
     # --- 게시글 관련 경로 ---
     path('posts/', views.post_list, name='post_list'),

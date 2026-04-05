@@ -11,6 +11,39 @@ from django.core.exceptions import ValidationError
 from .forms import SignUpForm, PostForm
 from .models import CustomUser, Post
 
+
+# 이메일 발송을 위한 함수 추가
+def password_reset_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        
+        try:
+            user = CustomUser.objects.get(username=username, email=email)
+            
+            # 1. 6자리 랜덤 인증번호 생성
+            auth_code = str(random.randint(100000, 999999))
+            
+            # 2. 세션에 인증번호와 유저 ID 저장 (나중에 확인용)
+            request.session['auth_code'] = auth_code
+            request.session['reset_user_id'] = user.id
+            
+            # 3. 이메일 발송
+            send_mail(
+                '비밀번호 재설정 인증번호입니다.',
+                f'인증번호는 [{auth_code}] 입니다.',
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+            )
+            return redirect('password_reset_verify') # 인증번호 입력 페이지로 이동
+            
+        except CustomUser.DoesNotExist:
+            return render(request, 'password_reset.html', {'error': '일치하는 사용자 정보가 없습니다.'})
+            
+    return render(request, 'password_reset.html')
+
+
 # 1. 홈 화면
 def home_view(request):
     return render(request, 'home.html')
@@ -97,5 +130,5 @@ def post_create(request):
 
 # 8. 게시글 상세보기
 def post_detail(request, pk):
-    post = get_object_with_404(Post, pk=pk)
+    post = get_object_or_404(Post, pk=pk)
     return render(request, 'post_detail.html', {'post': post})
