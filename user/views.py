@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 
 # 모델과 폼 임포트 (댓글 관련 제외)
 from .forms import SignUpForm, PostForm
-from .models import CustomUser, Post
+from .models import CustomUser, Post, Comment
 
 
 # 이메일 발송을 위한 함수 추가
@@ -148,3 +148,22 @@ def comment_like(request, pk):
     else:
         comment.likes.add(request.user)
     return redirect('post_detail', pk=comment.post.pk)
+
+def comment_create(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        parent_id = request.POST.get('parent_id') # 대댓글일 경우 부모 댓글 ID를 받음
+        
+        comment = Comment(
+            post=post,
+            author=request.user,
+            content=content
+        )
+        
+        if parent_id: # 부모 댓글 ID가 있다면 대댓글로 설정
+            parent_comment = get_object_or_404(Comment, pk=parent_id)
+            comment.parent = parent_comment
+            
+        comment.save()
+    return redirect('post_detail', pk=pk)

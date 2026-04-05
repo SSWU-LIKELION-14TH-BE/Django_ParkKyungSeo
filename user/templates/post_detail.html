@@ -1,43 +1,8 @@
 {% extends 'base.html' %}
-
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
 <div class="post-detail-container">
-    <h2>{{ post.title }}</h2>
-    <div style="color: #666; margin-bottom: 15px;">
-        작성자: <strong>{{ post.author.nickname }}</strong> | {{ post.created_at|date:"Y-m-d H:i" }}
-    </div>
-
-    <div class="tech-tags" style="margin-bottom: 20px;">
-        {% for stack in post.tech_stacks.all %}
-        <span style="background: #e9ecef; padding: 4px 10px; border-radius: 15px; font-size: 0.9em; margin-right: 5px;">
-            #{{ stack.name }}
-        </span>
-        {% endfor %}
-    </div>
-
-    <hr>
-
-    {% if post.image %}
-    <div class="post-image" style="margin: 20px 0; text-align: center;">
-        <img src="{{ post.image.url }}" alt="프로젝트 이미지" style="max-width: 100%; border-radius: 8px;">
-    </div>
-    {% endif %}
-
-    <div class="post-content" style="line-height: 1.6; min-height: 200px;">
-        {{ post.content|linebreaks }}
-    </div>
-
-    {% if post.github_url %}
-    <div style="margin-top: 30px;">
-        <a href="{{ post.github_url }}" target="_blank" class="main-btn"
-            style="display: inline-block; width: auto; padding: 10px 20px;">
-            <i class="fab fa-github"></i> GitHub 저장소 방문
-        </a>
-    </div>
-    {% endif %}
-
     <div style="margin-top: 30px;">
         <form action="{% url 'post_like' post.pk %}" method="POST">
             {% csrf_token %}
@@ -49,31 +14,71 @@
 
     <hr style="margin: 40px 0;">
 
-    <h3>댓글 {{ post.comments.count }}개</h3>
-    {% for comment in post.comments.all %}
-        {% if not comment.parent %}
-        <div class="comment" style="margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #f8f9fa;">
-            <strong>{{ comment.author.nickname }}</strong>: {{ comment.content }}
-            <a href="{% url 'comment_like' comment.pk %}" style="text-decoration: none; margin-left: 10px;">
-                ❤️ {{ comment.total_likes }}
-            </a>
+    <div class="comment-section">
+        <h3>댓글 {{ post.comments.count }}개</h3>
 
-            {% for reply in comment.replies.all %}
-            <div style="margin-left: 30px; font-size: 0.9em; margin-top: 5px; color: #555;">
-                ↳ <strong>{{ reply.author.nickname }}</strong>: {{ reply.content }}
-                <a href="{% url 'comment_like' reply.pk %}" style="text-decoration: none; margin-left: 5px;">
-                    ❤️ {{ reply.total_likes }}
-                </a>
+
+        {% for comment in post.comments.all %}
+            {% if not comment.parent %} <div class="comment-item" style="border-bottom: 1px solid #eee; padding: 15px 0;">
+                <div class="comment-header">
+                    <strong>{{ comment.author.nickname }}</strong>
+                    {% if comment.author == post.author %}
+                        <span style="background: #007bff; color: white; font-size: 0.7em; padding: 2px 6px; border-radius: 10px; margin-left: 5px;">글쓴이</span>
+                    {% endif %}
+                    <span style="color: #999; font-size: 0.8em; margin-left: 10px;">{{ comment.created_at|timesince }} 전</span>
+                </div>
+                
+                <p style="margin: 8px 0;">{{ comment.content }}</p>
+
+                <div style="font-size: 0.85em;">
+                    <a href="{% url 'comment_like' comment.pk %}" style="text-decoration: none; color: #ff6b6b;">❤️ {{ comment.total_likes }}</a>
+                    <a href="javascript:void(0);" onclick="toggleReplyForm('{{ comment.id }}')" style="margin-left: 15px; color: #888; text-decoration: none;">답글 달기</a>
+                </div>
+
+                <div id="reply-form-{{ comment.id }}" style="display: none; margin-top: 15px; margin-left: 20px;">
+                    <form action="{% url 'comment_create' post.pk %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                        <textarea name="content" placeholder="답글을 입력하세요." required style="width: 100%; height: 60px; padding: 10px;"></textarea>
+                        <button type="submit" class="main-btn" style="width: auto; padding: 5px 15px; font-size: 0.9em; margin-top: 5px;">답글 등록</button>
+                    </form>
+                </div>
+
+                {% for reply in comment.replies.all %}
+                <div class="reply-item" style="margin-left: 30px; margin-top: 15px; padding-left: 10px; border-left: 2px solid #eee;">
+                    <div class="reply-header">
+                        <strong>{{ reply.author.nickname }}</strong>
+                        {% if reply.author == post.author %}
+                            <span style="background: #007bff; color: white; font-size: 0.7em; padding: 2px 6px; border-radius: 10px; margin-left: 5px;">글쓴이</span>
+                        {% endif %}
+                        <span style="color: #999; font-size: 0.8em; margin-left: 10px;">{{ reply.created_at|timesince }} 전</span>
+                    </div>
+                    <p style="margin: 5px 0;">{{ reply.content }}</p>
+                    <a href="{% url 'comment_like' reply.pk %}" style="font-size: 0.85em; text-decoration: none; color: #ff6b6b;">❤️ {{ reply.total_likes }}</a>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-    {% empty %}
-        <p style="color: #888;">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</p>
-    {% endfor %}
+            {% endif %}
+        {% empty %}
+            <p style="color: #888;">아직 댓글이 없습니다.</p>
+        {% endfor %}
+    </div>
+
+        <form action="{% url 'comment_create' post.pk %}" method="POST" style="margin-bottom: 30px;">
+            {% csrf_token %}
+            <textarea name="content" placeholder="따뜻한 댓글을 남겨주세요." required style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+            <button type="submit" class="main-btn" style="width: auto; margin-top: 10px;">댓글 등록</button>
+        </form>
 
     <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
         <a href="{% url 'post_list' %}" style="color: #888; text-decoration: none;">← 목록으로 돌아가기</a>
     </div>
 </div>
+
+<script>
+function toggleReplyForm(commentId) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+</script>
 {% endblock %}
