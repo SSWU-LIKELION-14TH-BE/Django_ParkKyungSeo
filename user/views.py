@@ -132,3 +132,19 @@ def post_create(request):
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     return render(request, 'post_detail.html', {'post': post})
+
+def post_like(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.user in post.likes.all():
+        post.likes.remove(request.user) # 이미 눌렀다면 취소
+    else:
+        post.likes.add(request.user) # 안 눌렀다면 추가
+    return redirect('post_detail', pk=pk)
+
+def comment_like(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user in comment.likes.all():
+        comment.likes.remove(request.user)
+    else:
+        comment.likes.add(request.user)
+    return redirect('post_detail', pk=comment.post.pk)

@@ -26,3 +26,27 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    
+    # 좋아요: 여러 유저가 여러 게시글에 좋아요를 누를 수 있으므로 ManyToMany 사용
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_posts', blank=True)
+
+    def total_likes(self):
+        return self.likes.count()
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    # 대댓글 구현을 위해 자기 자신을 참조 (parent)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+    
+    # 댓글/대댓글 좋아요
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_comments', blank=True)
+
+    def total_likes(self):
+        return self.likes.count()
+
+    def __str__(self):
+        return f'{self.author.nickname}: {self.content[:20]}'
