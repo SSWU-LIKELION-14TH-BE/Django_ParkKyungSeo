@@ -6,9 +6,10 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    path('password-reset/verify/', views.password_reset_confirm, name='password_reset_confirm'),
     
-    # --- 새로 추가할 게시글 관련 경로 ---
+    path('password-reset/verify/', views.password_reset_confirm, name='password_reset'), 
+
+    # --- 게시글 관련 경로 ---
     path('posts/', views.post_list, name='post_list'),
     path('posts/new/', views.post_create, name='post_create'),
 ]
