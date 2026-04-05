@@ -17,4 +17,5 @@ urlpatterns = [
     # --- 게시글 관련 경로 ---
     path('posts/', views.post_list, name='post_list'),
     path('posts/new/', views.post_create, name='post_create'),
+    path('posts/<int:pk>/', views.post_detail, name='post_detail'),
 ]

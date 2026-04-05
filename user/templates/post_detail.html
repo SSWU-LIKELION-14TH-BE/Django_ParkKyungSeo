@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="post-detail-container">
+    <h2>{{ post.title }}</h2>
+    <div style="color: #666; margin-bottom: 15px;">
+        작성자: <strong>{{ post.author.nickname }}</strong> | {{ post.created_at|date:"Y-m-d H:i" }}
+    </div>
+
+    <div class="tech-tags" style="margin-bottom: 20px;">
+        {% for stack in post.tech_stacks.all %}
+            <span style="background: #e9ecef; padding: 4px 10px; border-radius: 15px; font-size: 0.9em; margin-right: 5px;">
+                #{{ stack.name }}
+            </span>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    {% if post.image %}
+        <div class="post-image" style="margin: 20px 0; text-align: center;">
+            <img src="{{ post.image.url }}" alt="프로젝트 이미지" style="max-width: 100%; border-radius: 8px;">
+        </div>
+    {% endif %}
+
+    <div class="post-content" style="line-height: 1.6; min-height: 200px;">
+        {{ post.content|linebreaks }}
+    </div>
+
+    {% if post.github_url %}
+        <div style="margin-top: 30px;">
+            <a href="{{ post.github_url }}" target="_blank" class="main-btn" style="display: inline-block; width: auto; padding: 10px 20px;">
+                <i class="fab fa-github"></i> GitHub 저장소 방문
+            </a>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+        <a href="{% url 'post_list' %}" style="color: #888; text-decoration: none;">← 목록으로 돌아가기</a>
+    </div>
+</div>
+{% endblock %}

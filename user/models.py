@@ -11,7 +11,6 @@ class CustomUser(AbstractUser):
 # --- 기술 스택 모델 추가 ---
 class TechStack(models.Model):
     name = models.CharField(max_length=50, unique=True)
-
     def __str__(self):
         return self.name
 
@@ -20,11 +19,9 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
-    
-    # --- 새로 추가되는 필드 ---
-    tech_stacks = models.ManyToManyField(TechStack, blank=True) # 기술 스택 선택
-    github_url = models.URLField(max_length=200, blank=True, null=True) # 깃허브 링크
-    
+    # 추가 필드
+    tech_stacks = models.ManyToManyField(TechStack, blank=True)
+    github_url = models.URLField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
