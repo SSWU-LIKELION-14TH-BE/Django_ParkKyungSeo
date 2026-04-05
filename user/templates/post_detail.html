@@ -3,6 +3,40 @@
 
 {% block content %}
 <div class="post-detail-container">
+    <h2>{{ post.title }}</h2>
+    <div style="color: #666; margin-bottom: 15px;">
+        작성자: <strong>{{ post.author.nickname }}</strong> | {{ post.created_at|date:"Y-m-d H:i" }}
+    </div>
+
+    <div class="tech-tags" style="margin-bottom: 20px;">
+        {% for stack in post.tech_stacks.all %}
+        <span style="background: #e9ecef; padding: 4px 10px; border-radius: 15px; font-size: 0.9em; margin-right: 5px;">
+            #{{ stack.name }}
+        </span>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    {% if post.image %}
+    <div class="post-image" style="margin: 20px 0; text-align: center;">
+        <img src="{{ post.image.url }}" alt="프로젝트 이미지" style="max-width: 100%; border-radius: 8px;">
+    </div>
+    {% endif %}
+
+    <div class="post-content" style="line-height: 1.6; min-height: 200px;">
+        {{ post.content|linebreaks }}
+    </div>
+
+    {% if post.github_url %}
+    <div style="margin-top: 30px;">
+        <a href="{{ post.github_url }}" target="_blank" class="main-btn"
+            style="display: inline-block; width: auto; padding: 10px 20px;">
+            <i class="fab fa-github"></i> GitHub 저장소 방문
+        </a>
+    </div>
+    {% endif %}
+
     <div style="margin-top: 30px;">
         <form action="{% url 'post_like' post.pk %}" method="POST">
             {% csrf_token %}
@@ -17,9 +51,9 @@
     <div class="comment-section">
         <h3>댓글 {{ post.comments.count }}개</h3>
 
-
         {% for comment in post.comments.all %}
-            {% if not comment.parent %} <div class="comment-item" style="border-bottom: 1px solid #eee; padding: 15px 0;">
+            {% if not comment.parent %}
+            <div class="comment-item" style="border-bottom: 1px solid #eee; padding: 15px 0;">
                 <div class="comment-header">
                     <strong>{{ comment.author.nickname }}</strong>
                     {% if comment.author == post.author %}
@@ -39,7 +73,7 @@
                     <form action="{% url 'comment_create' post.pk %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                        <textarea name="content" placeholder="답글을 입력하세요." required style="width: 100%; height: 60px; padding: 10px;"></textarea>
+                        <textarea name="content" placeholder="답글을 입력하세요." required style="width: 100%; height: 60px; padding: 10px; border: 1px solid #ddd;"></textarea>
                         <button type="submit" class="main-btn" style="width: auto; padding: 5px 15px; font-size: 0.9em; margin-top: 5px;">답글 등록</button>
                     </form>
                 </div>
@@ -64,11 +98,11 @@
         {% endfor %}
     </div>
 
-        <form action="{% url 'comment_create' post.pk %}" method="POST" style="margin-bottom: 30px;">
-            {% csrf_token %}
-            <textarea name="content" placeholder="따뜻한 댓글을 남겨주세요." required style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
-            <button type="submit" class="main-btn" style="width: auto; margin-top: 10px;">댓글 등록</button>
-        </form>
+    <form action="{% url 'comment_create' post.pk %}" method="POST" style="margin-top: 30px;">
+        {% csrf_token %}
+        <textarea name="content" placeholder="따뜻한 댓글을 남겨주세요." required style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+        <button type="submit" class="main-btn" style="width: auto; margin-top: 10px;">댓글 등록</button>
+    </form>
 
     <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
         <a href="{% url 'post_list' %}" style="color: #888; text-decoration: none;">← 목록으로 돌아가기</a>
