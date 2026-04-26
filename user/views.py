@@ -196,3 +196,12 @@ def comment_create(request, pk):
                 content=content
             )
     return redirect('post_detail', pk=pk)
+
+# 게시물 검색 기능
+def post_list(request):
+    search_query = request.GET.get('q', '')
+    posts = Post.objects.prefetch_related('tech_stacks').all().order_by('-created_at')
+    if search_query:
+        posts = posts.filter(title__icontains=search_query)
+        
+    return render(request, 'post_list.html', {'posts': posts})
