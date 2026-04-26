@@ -227,3 +227,20 @@ def post_list(request):
     }
     return render(request, 'post_list.html', context)
 
+def post_detail(request, pk):
+    post = get_object_or_404(
+        Post.objects.prefetch_related(
+            'comments__replies', 
+            'comments__author', 
+            'comments__replies__author',
+            'tech_stacks'
+        ), 
+        pk=pk
+    )
+    
+    # 조회수 증가 로직 추가
+    post.views += 1
+    post.save()
+    
+    return render(request, 'post_detail.html', {'post': post})
+

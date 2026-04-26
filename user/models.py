@@ -19,10 +19,11 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
-    # 추가 필드
+    
     tech_stacks = models.ManyToManyField(TechStack, blank=True)
     github_url = models.URLField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    views = models.PositiveIntegerField(default=0) # 조회수 필드
 
     def __str__(self):
         return self.title

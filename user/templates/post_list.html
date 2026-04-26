@@ -56,9 +56,15 @@
                     {% endif %}
                 </div>
                 
-                <div class="post-meta-right" style="display: flex; align-items: center; color: #ff6b6b; font-weight: bold;">
-                    <i class="fas fa-heart" style="margin-right: 5px;"></i>
-                    <span>{{ post.likes.count }}</span>
+                <div class="post-meta-right" style="display: flex; align-items: center; gap: 15px;">
+                    <div style="display: flex; align-items: center; color: #888; font-size: 0.9em;">
+                        <i class="fas fa-eye" style="margin-right: 5px;"></i>
+                        <span>{{ post.views }}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; color: #ff6b6b; font-weight: bold; font-size: 0.9em;">
+                        <i class="fas fa-heart" style="margin-right: 5px;"></i>
+                        <span>{{ post.likes_count }}</span>
+                    </div>
                 </div>
             </div>
         </div>
