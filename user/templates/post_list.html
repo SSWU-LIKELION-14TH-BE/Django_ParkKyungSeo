@@ -2,61 +2,46 @@
 
 {% block content %}
 <div class="post-list-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
-    
-    <div class="search-section" style="text-align: center; margin-bottom: 40px;">
-        <form action="{% url 'post_list' %}" method="GET" style="display: flex; justify-content: center; gap: 10px;">
-            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="게시물 제목을 검색하세요" 
-                   style="width: 60%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none;">
-            <button type="submit" class="main-btn" style="width: auto; padding: 10px 25px; border-radius: 25px; background-color: #007bff; color: white; border: none; cursor: pointer;">
-                <i class="fas fa-search"></i> 검색
-            </button>
+
+    <div class="list-header" style="margin-bottom: 30px;">
+        <form action="{% url 'post_list' %}" method="GET" id="search-form">
+            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="게시물 제목을 검색하세요"
+                    style="width: 60%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none;">
+                <button type="submit" class="main-btn"
+                    style="width: auto; padding: 10px 25px; border-radius: 25px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+                    <i class="fas fa-search"></i> 검색
+                </button>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+                <label for="sort" style="font-size: 0.9em; color: #666;">정렬 기준:</label>
+                <select name="sort" onchange="this.form.submit()"
+                    style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 5px; outline: none; cursor: pointer;">
+                    <option value="latest" {% if sort_by == 'latest' %}selected{% endif %}>최신순</option>
+                    <option value="popular" {% if sort_by == 'popular' %}selected{% endif %}>인기순 (준비중)</option>
+                </select>
+            </div>
         </form>
     </div>
 
     <div class="posts-grid">
         {% for post in posts %}
-        <div class="post-item" style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s;">
+        <div class="post-item"
+            style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s;">
             <h3 style="margin-top: 0;">
                 <a href="{% url 'post_detail' post.pk %}" style="text-decoration: none; color: #333; font-size: 1.2em;">
                     {{ post.title }}
                 </a>
             </h3>
-
             <div style="color: #666; font-size: 0.9em; margin: 10px 0;">
                 <span>작성자: <strong>{{ post.author.nickname }}</strong></span>
                 <span style="margin-left: 15px;">{{ post.created_at|date:"Y-m-d" }}</span>
             </div>
-
-            <p style="margin: 10px 0;">
-                <span style="font-weight: bold; color: #555;">기술 스택:</span>
-                {% for stack in post.tech_stacks.all %}
-                <span style="background: #f0f2f5; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; margin-right: 5px; color: #007bff;">
-                    #{{ stack.name }}
-                </span>
-                {% endfor %}
-            </p>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                {% if post.github_url %}
-                <a href="{{ post.github_url }}" target="_blank" style="color: #24292e; text-decoration: none; font-size: 0.9em;">
-                    <i class="fab fa-github"></i> GitHub 바로가기
-                </a>
-                {% else %}
-                <span></span>
-                {% endif %}
-                <span style="color: #ff6b6b; font-size: 0.9em;">❤️ {{ post.total_likes }}</span>
-            </div>
         </div>
         {% empty %}
-        <p style="text-align: center; color: #999; margin-top: 50px;">검색 결과가 없거나 게시물이 존재하지 않습니다.</p>
+        <p style="text-align: center; color: #999; margin-top: 50px;">조건에 맞는 게시물이 없습니다.</p>
         {% endfor %}
     </div>
 </div>
-
-<style>
-    .post-item:hover {
-        transform: translateY(-3px);
-        border-color: #007bff;
-    }
-</style>
 {% endblock %}

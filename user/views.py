@@ -201,7 +201,19 @@ def comment_create(request, pk):
 def post_list(request):
     search_query = request.GET.get('q', '')
     posts = Post.objects.prefetch_related('tech_stacks').all().order_by('-created_at')
+    sort_by = request.GET.get('sort', 'latest')
+    
     if search_query:
         posts = posts.filter(title__icontains=search_query)
         
-    return render(request, 'post_list.html', {'posts': posts})
+    # 게시물 정렬 
+    if sort_by == 'latest':
+        posts = posts.order_by('-created_at')
+        
+    context = {
+        'posts': posts,
+        'search_query': search_query,
+        'sort_by': sort_by,
+    }
+    return render(request, 'post_list.html', context)
+
