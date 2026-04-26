@@ -38,9 +38,9 @@
     {% endif %}
 
     <div style="margin-top: 30px;">
-        <form action="{% url 'post_like' post.pk %}" method="POST">
+        <form action="{% url 'post_like' post.pk %}" method="POST" style="display: inline;">
             {% csrf_token %}
-            <button type="submit" class="main-btn" style="width: auto; padding: 10px 20px;">
+            <button type="submit" class="main-btn" style="width: auto; padding: 10px 20px; cursor: pointer;">
                 <i class="fas fa-heart"></i> 좋아요 {{ post.total_likes }}
             </button>
         </form>
@@ -64,8 +64,13 @@
                 
                 <p style="margin: 8px 0;">{{ comment.content }}</p>
 
-                <div style="font-size: 0.85em;">
-                    <a href="{% url 'comment_like' comment.pk %}" style="text-decoration: none; color: #ff6b6b;">❤️ {{ comment.total_likes }}</a>
+                <div style="display: flex; align-items: center; font-size: 0.85em;">
+                    <form action="{% url 'comment_like' comment.pk %}" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: #ff6b6b; cursor: pointer; padding: 0; font-size: inherit; font-family: inherit;">
+                            ❤️ {{ comment.total_likes }}
+                        </button>
+                    </form>
                     <a href="javascript:void(0);" onclick="toggleReplyForm('{{ comment.id }}')" style="margin-left: 15px; color: #888; text-decoration: none;">답글 달기</a>
                 </div>
 
@@ -88,7 +93,13 @@
                         <span style="color: #999; font-size: 0.8em; margin-left: 10px;">{{ reply.created_at|timesince }} 전</span>
                     </div>
                     <p style="margin: 5px 0;">{{ reply.content }}</p>
-                    <a href="{% url 'comment_like' reply.pk %}" style="font-size: 0.85em; text-decoration: none; color: #ff6b6b;">❤️ {{ reply.total_likes }}</a>
+                    
+                    <form action="{% url 'comment_like' reply.pk %}" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: #ff6b6b; cursor: pointer; padding: 0; font-size: 0.85em; font-family: inherit;">
+                            ❤️ {{ reply.total_likes }}
+                        </button>
+                    </form>
                 </div>
                 {% endfor %}
             </div>

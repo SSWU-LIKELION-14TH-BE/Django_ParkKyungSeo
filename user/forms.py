@@ -7,9 +7,9 @@ class SignUpForm(UserCreationForm):
     nickname = forms.CharField(required=True)
 
 
-    class Meta(UserCreationForm.Meta): # Meta도 상속받는 것이 좋습니다.
+    class Meta(UserCreationForm.Meta): # Meta도 상속
         model = CustomUser
-        # password1, password2는 UserCreationForm이 알아서 처리하므로 fields에 명시하지 않아도 됩니다.
+        # password1, password2는 UserCreationForm이 알아서 처리하므로 fields에 명시x
         fields = ('username', 'nickname', 'email', 'phone_number')
 
 class PostForm(forms.ModelForm):
