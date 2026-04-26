@@ -12,7 +12,40 @@ from django.views.decorators.http import require_POST
 from .forms import SignUpForm, PostForm
 from .models import CustomUser, Post, Comment
 
-# --- 기존 회원가입/로그인/비밀번호 관련 함수 (유지) ---
+
+# 이메일 발송을 위한 함수 추가
+def password_reset_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        
+        try:
+            user = CustomUser.objects.get(username=username, email=email)
+            
+            # 1. 6자리 랜덤 인증번호 생성
+            auth_code = str(random.randint(100000, 999999))
+            
+            # 2. 세션에 인증번호와 유저 ID 저장 (나중에 확인용)
+            request.session['auth_code'] = auth_code
+            request.session['reset_user_id'] = user.id
+            
+            # 3. 이메일 발송
+            send_mail(
+                '비밀번호 재설정 인증번호입니다.',
+                f'인증번호는 [{auth_code}] 입니다.',
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+            )
+            return redirect('password_reset_verify') # 인증번호 입력 페이지로 이동
+            
+        except CustomUser.DoesNotExist:
+            return render(request, 'password_reset.html', {'error': '일치하는 사용자 정보가 없습니다.'})
+            
+    return render(request, 'password_reset.html')
+
+
+# 1. 홈 화면
 def home_view(request):
     return render(request, 'home.html')
 
@@ -67,19 +100,29 @@ def password_reset_confirm(request):
     if request.method == 'POST':
         input_code = request.POST.get('auth_code')
         new_password = request.POST.get('new_password')
-        session_code = request.session.get('auth_code')
-        user_id = request.session.get('reset_user_id')
+        confirm_password = request.POST.get('confirm_password')
         
-        if input_code == session_code and user_id:
-            user = CustomUser.objects.get(id=user_id)
-            user.set_password(new_password)
-            user.save()
-            del request.session['auth_code']
-            del request.session['reset_user_id']
-            return redirect('login')
-    return render(request, 'password_reset_confirm.html')
-
-# --- 게시글 관련 함수 (피드백 반영 수정) ---
+        if new_password != confirm_password:
+            return render(request, 'password_reset_verify.html', {'error': '새 비밀번호가 서로 일치하지 않습니다.'})
+        
+        if input_code == request.session.get('auth_code'):
+            user_id = request.session.get('reset_user_id')
+            try:
+                user = CustomUser.objects.get(id=user_id)
+                validate_password(new_password, user=user)
+                user.set_password(new_password)
+                user.save()
+                
+                del request.session['auth_code']
+                del request.session['reset_user_id']
+                return redirect('login')
+            except (CustomUser.DoesNotExist, ValidationError) as e:
+                error_msg = e.messages if hasattr(e, 'messages') else '오류가 발생했습니다.'
+                return render(request, 'password_reset_verify.html', {'error': error_msg})
+        else:
+            return render(request, 'password_reset_verify.html', {'error': '인증번호가 일치하지 않습니다.'})
+            
+    return render(request, 'password_reset_verify.html')
 
 def post_list(request):
     posts = Post.objects.all().order_by('-created_at')
