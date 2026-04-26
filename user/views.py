@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
+from django.db.models import Count
 
 # 모델과 폼 임포트
 from .forms import SignUpForm, PostForm
@@ -197,18 +198,27 @@ def comment_create(request, pk):
             )
     return redirect('post_detail', pk=pk)
 
-# 게시물 검색 기능
+# 게시물 검색/정렬 기능
 def post_list(request):
     search_query = request.GET.get('q', '')
-    posts = Post.objects.prefetch_related('tech_stacks').all().order_by('-created_at')
     sort_by = request.GET.get('sort', 'latest')
-    
+    posts = Post.objects.annotate(likes_count=Count('likes')).prefetch_related('tech_stacks', 'author').all()
+
+    #검색 필터링
     if search_query:
         posts = posts.filter(title__icontains=search_query)
         
     # 게시물 정렬 
     if sort_by == 'latest':
         posts = posts.order_by('-created_at')
+
+    if sort_by == 'popular':
+        # 인기순: 좋아요 많은 순 -> 최신순
+        posts = posts.order_by('-likes_count', '-created_at')
+    else:
+        # 최신순 (기본값)
+        posts = posts.order_by('-created_at')
+
         
     context = {
         'posts': posts,

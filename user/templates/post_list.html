@@ -19,7 +19,7 @@
                 <select name="sort" onchange="this.form.submit()"
                     style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 5px; outline: none; cursor: pointer;">
                     <option value="latest" {% if sort_by == 'latest' %}selected{% endif %}>최신순</option>
-                    <option value="popular" {% if sort_by == 'popular' %}selected{% endif %}>인기순 (준비중)</option>
+                    <option value="popular" {% if sort_by == 'popular' %}selected{% endif %}>인기순</option>
                 </select>
             </div>
         </form>
@@ -27,20 +27,41 @@
 
     <div class="posts-grid">
         {% for post in posts %}
-        <div class="post-item"
-            style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s;">
+        <div class="post-item" style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s;">
             <h3 style="margin-top: 0;">
                 <a href="{% url 'post_detail' post.pk %}" style="text-decoration: none; color: #333; font-size: 1.2em;">
                     {{ post.title }}
                 </a>
             </h3>
+
             <div style="color: #666; font-size: 0.9em; margin: 10px 0;">
                 <span>작성자: <strong>{{ post.author.nickname }}</strong></span>
                 <span style="margin-left: 15px;">{{ post.created_at|date:"Y-m-d" }}</span>
             </div>
+
+            <p style="margin: 10px 0;">
+                {% for stack in post.tech_stacks.all %}
+                <span style="background: #f0f2f5; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; margin-right: 5px; color: #007bff;">
+                    #{{ stack.name }}
+                </span>
+                {% endfor %}
+            </p>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f9f9f9;">
+                <div class="post-meta-left">
+                    {% if post.github_url %}
+                    <a href="{{ post.github_url }}" target="_blank" style="color: #24292e; text-decoration: none; font-size: 0.9em;">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <div class="post-meta-right" style="display: flex; align-items: center; color: #ff6b6b; font-weight: bold;">
+                    <i class="fas fa-heart" style="margin-right: 5px;"></i>
+                    <span>{{ post.likes.count }}</span>
+                </div>
+            </div>
         </div>
-        {% empty %}
-        <p style="text-align: center; color: #999; margin-top: 50px;">조건에 맞는 게시물이 없습니다.</p>
         {% endfor %}
     </div>
 </div>
