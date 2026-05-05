@@ -1,17 +1,19 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
 from django.db.models import Count
-
-# 모델과 폼 임포트
-from .forms import SignUpForm, PostForm
+from django.contrib import messages
+from .forms import UserUpdateForm, SignUpForm, PostForm
 from .models import CustomUser, Post, Comment
+from django.contrib.auth.decorators import login_required
+
+
 
 # 1. 홈 화면
 def home_view(request):
@@ -192,3 +194,35 @@ def post_detail(request, pk):
     
     return render(request, 'post_detail.html', {'post': post})
 
+@login_required
+def mypage_view(request):
+    user_form = UserUpdateForm(instance=request.user)
+    password_form = PasswordChangeForm(request.user)
+    
+    if request.method == 'POST':
+        # 회원정보 수정 처리
+        if 'update_info' in request.POST:
+            user_form = UserUpdateForm(request.POST, instance=request.user)
+            if user_form.is_valid():
+                user_form.save()
+                messages.success(request, '회원 정보가 수정되었습니다.')
+                return redirect('mypage')
+        
+        # 비밀번호 변경 처리 (보안 강화)
+        elif 'change_password' in request.POST:
+            password_form = PasswordChangeForm(request.user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                # 비밀번호 변경 후 세션 무효화 방지
+                update_session_auth_hash(request, user)
+                messages.success(request, '비밀번호가 성공적으로 변경되었습니다.')
+                return redirect('mypage')
+            else:
+                messages.error(request, '비밀번호 변경에 실패했습니다. 규칙을 확인해주세요.')
+
+        
+
+    return render(request, 'mypage.html', {
+        'user_form': user_form,
+        'password_form': password_form
+    })

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mypage-container" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2>내 정보 수정</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        <button type="submit" name="update_info" class="btn">정보 수정하기</button>
+    </form>
+
+    <hr style="margin: 40px 0;">
+
+    <h2>비밀번호 변경</h2>
+    <form method="POST">
+        {% csrf_token %}
+        
+        {% if password_form.errors %}
+            <div class="error-list" style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                {% for field in password_form %}
+                    {% for error in field.errors %}
+                        <p><strong>{{ field.label }}:</strong> {{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in password_form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {{ password_form.as_p }}
+        <button type="submit" name="change_password" class="btn">비밀번호 변경</button>
+    </form>
+</div>
+{% endblock %}
+

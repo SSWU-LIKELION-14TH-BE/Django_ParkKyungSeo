@@ -1,5 +1,6 @@
 from django.urls import path
-from . import views # 모든 뷰를 한꺼번에 가져옵니다.
+from . import views
+
 
 urlpatterns = [
     path('', views.home_view, name='home'),
@@ -22,4 +23,5 @@ urlpatterns = [
     path('posts/<int:pk>/like/', views.post_like, name='post_like'),
     path('posts/<int:pk>/comment/', views.comment_create, name='comment_create'),
     path('comments/<int:pk>/like/', views.comment_like, name='comment_like'),
+    path('mypage/', views.mypage_view, name='mypage'),
 ]
