@@ -1,16 +1,18 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.views.decorators.http import require_POST
 from django.db.models import Count
 
-# 모델과 폼 임포트
-from .forms import SignUpForm, PostForm
+from django.contrib import messages
+from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.password_validation import validate_password
+
+from .forms import SignUpForm, PostForm, UserUpdateForm
 from .models import CustomUser, Post, Comment
 
 # 1. 홈 화면
@@ -192,3 +194,66 @@ def post_detail(request, pk):
     
     return render(request, 'post_detail.html', {'post': post})
 
+@login_required
+def mypage_view(request):
+    user_form = UserUpdateForm(instance=request.user)
+    password_form = PasswordChangeForm(request.user)
+
+    my_posts = Post.objects.filter(author=request.user).order_by('-created_at')
+    
+    if request.method == 'POST':
+        # 회원정보 수정 처리
+        if 'update_info' in request.POST:
+            user_form = UserUpdateForm(request.POST, instance=request.user)
+            if user_form.is_valid():
+                user_form.save()
+                messages.success(request, '회원 정보가 수정되었습니다.')
+                return redirect('mypage')
+        
+        # 비밀번호 변경 처리 (보안 강화)
+        elif 'change_password' in request.POST:
+            password_form = PasswordChangeForm(request.user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                # 비밀번호 변경 후 세션 무효화 방지
+                update_session_auth_hash(request, user)
+                messages.success(request, '비밀번호가 성공적으로 변경되었습니다.')
+                return redirect('mypage')
+            else:
+                messages.error(request, '비밀번호 변경에 실패했습니다. 규칙을 확인해주세요.')
+
+        
+
+    return render(request, 'mypage.html', {
+        'user_form': user_form,
+        'password_form': password_form,
+        'my_posts': my_posts
+    })
+
+@login_required
+def post_update(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if post.author != request.user:
+        raise PermissionDenied # 작성자가 아니면 403 에러 처리
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'post_form.html', {'form': form})
+
+
+# 게시글 삭제
+@require_POST
+@login_required
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if post.author != request.user:
+        raise PermissionDenied
+        
+    post.delete()
+    messages.success(request, "게시물이 삭제되었습니다.")
+    return redirect('post_list')

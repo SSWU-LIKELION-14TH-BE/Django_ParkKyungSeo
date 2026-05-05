@@ -1,6 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from .models import CustomUser, Post,  TechStack
+
 
 class SignUpForm(UserCreationForm):
     email = forms. EmailField(required=True) # 이메일 필수
@@ -21,4 +22,8 @@ class PostForm(forms.ModelForm):
             'github_url': forms.URLInput(attrs={'placeholder': 'https://github.com/username/repo'}),
         }
 
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'nickname'] # 아이디(username)와 닉네임 수정
 
