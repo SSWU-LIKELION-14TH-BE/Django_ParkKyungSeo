@@ -12,8 +12,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.password_validation import validate_password
 
-from .forms import SignUpForm, PostForm, UserUpdateForm
-from .models import CustomUser, Post, Comment
+from .forms import SignUpForm, PostForm, UserUpdateForm, GuestbookForm
+from .models import CustomUser, Post, Comment, Guestbook
+
 
 # 1. 홈 화면
 def home_view(request):
@@ -257,3 +258,25 @@ def post_delete(request, pk):
     post.delete()
     messages.success(request, "게시물이 삭제되었습니다.")
     return redirect('post_list')
+
+@login_required
+def guestbook_view(request, username):
+    owner = get_object_or_404(CustomUser, username=username)
+    guestbooks = Guestbook.objects.filter(target_user=owner).order_by('-created_at')
+    form = GuestbookForm()
+
+    if request.method == 'POST':
+        form = GuestbookForm(request.POST)
+        if form.is_valid():
+            guestbook = form.save(commit=False)
+            guestbook.target_user = owner    
+            guestbook.author = request.user  
+            guestbook.save()
+            messages.success(request, f'{owner.nickname}님에게 방명록을 남겼습니다.')
+            return redirect('guestbook', username=username)
+
+    return render(request, 'guestbook.html', {
+        'owner': owner,
+        'guestbooks': guestbooks,
+        'form': form
+    })

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2>{{ owner.nickname }}님의 방명록</h2>
+
+    <!-- 방명록 쓰기 -->
+    <form method="POST" style="margin-bottom: 30px;">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn" style="width: 100%;">방명록 남기기</button>
+    </form>
+
+    <hr>
+
+    <!-- 방명록 목록 -->
+    <div class="guestbook-list">
+        {% for g in guestbooks %}
+            <div style="border-bottom: 1px solid #eee; padding: 15px 0;">
+                <strong>{{ g.author.nickname }}</strong> 
+                <span style="font-size: 0.8em; color: #999;">({{ g.created_at|date:"Y-m-d H:i" }})</span>
+                <p style="margin-top: 5px;">{{ g.content }}</p>
+            </div>
+        {% empty %}
+            <p style="text-align: center; color: #999; margin-top: 20px;">아직 방명록이 없습니다.</p>
+        {% endfor %}
+    </div>
+    
+    <a href="{% url 'mypage' %}" style="display: block; text-align: center; margin-top: 20px; color: #666;">마이페이지로 돌아가기</a>
+</div>
+{% endblock %}

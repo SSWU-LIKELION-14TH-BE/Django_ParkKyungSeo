@@ -67,4 +67,10 @@
     {% endif %}
 </div>
 
+<div style="margin-top: 20px;">
+    <a href="{% url 'guestbook' user.username %}" class="btn" style="background-color: #6c757d; color: white; padding: 10px; text-decoration: none; border-radius: 5px;">
+        <i class="fas fa-book"></i> 내 방명록 보러가기
+    </a>
+</div>
+
 {% endblock %}

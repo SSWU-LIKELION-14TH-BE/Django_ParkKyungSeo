@@ -34,18 +34,23 @@
                 </a>
             </h3>
 
-            <div style="color: #666; font-size: 0.9em; margin: 10px 0;">
-                <span>작성자: <strong>{{ post.author.nickname }}</strong></span>
-                <span style="margin-left: 15px;">{{ post.created_at|date:"Y-m-d" }}</span>
-            </div>
+    <div style="color: #666; font-size: 0.9em; margin: 10px 0;">
+        <span>
+            작성자: 
+            <a href="{% url 'guestbook' post.author.username %}" style="text-decoration: none; color: #007bff; font-weight: bold;">
+                {{ post.author.nickname }}
+            </a>
+        </span>
+        <span style="margin-left: 15px;">{{ post.created_at|date:"Y-m-d" }}</span>
+    </div>
 
-            <p style="margin: 10px 0;">
-                {% for stack in post.tech_stacks.all %}
-                <span style="background: #f0f2f5; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; margin-right: 5px; color: #007bff;">
-                    #{{ stack.name }}
-                </span>
-                {% endfor %}
-            </p>
+    <p style="margin: 10px 0;">
+        {% for stack in post.tech_stacks.all %}
+        <span style="background: #f0f2f5; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; margin-right: 5px; color: #007bff;">
+            #{{ stack.name }}
+        </span>
+        {% endfor %}
+    </p>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f9f9f9;">
                 <div class="post-meta-left">
