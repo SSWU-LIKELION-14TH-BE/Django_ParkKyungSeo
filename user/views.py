@@ -1,18 +1,19 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth.password_validation import validate_password
+from django.core.mail import send_mail
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.views.decorators.http import require_POST
 from django.db.models import Count
-from django.contrib import messages
-from .forms import UserUpdateForm, SignUpForm, PostForm
-from .models import CustomUser, Post, Comment
-from django.contrib.auth.decorators import login_required
 
+from django.contrib import messages
+from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.password_validation import validate_password
+
+from .forms import SignUpForm, PostForm, UserUpdateForm
+from .models import CustomUser, Post, Comment
 
 # 1. 홈 화면
 def home_view(request):
