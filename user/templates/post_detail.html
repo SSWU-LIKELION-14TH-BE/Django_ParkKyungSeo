@@ -6,7 +6,11 @@
     <h2>{{ post.title }}</h2>
     <div style="color: #666; margin-bottom: 15px; display: flex; justify-content: space-between;">
         <div>
-            작성자: <strong>{{ post.author.nickname }}</strong> | {{ post.created_at|date:"Y-m-d H:i" }}
+            작성자: 
+            <a href="{% url 'guestbook' post.author.username %}" style="text-decoration: none; color: #007bff; font-weight: bold;">
+                {{ post.author.nickname }}
+            </a>
+            | {{ post.created_at|date:"Y-m-d H:i" }}
         </div>
         <div style="color: #888;">
             <i class="fas fa-eye"></i> 조회수 {{ post.views }}

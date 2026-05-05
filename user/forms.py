@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from .models import CustomUser, Post,  TechStack
+from .models import CustomUser, Post,  TechStack,  Guestbook
+
 
 
 class SignUpForm(UserCreationForm):
@@ -27,3 +28,10 @@ class UserUpdateForm(forms.ModelForm):
         model = CustomUser
         fields = ['username', 'nickname'] # 아이디(username)와 닉네임 수정
 
+class GuestbookForm(forms.ModelForm):
+    class Meta:
+        model = Guestbook
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'placeholder': '방명록을 남겨보세요!', 'rows': 3}),
+        }

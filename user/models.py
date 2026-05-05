@@ -51,3 +51,14 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.author.nickname}: {self.content[:20]}'
+    
+class Guestbook(models.Model):
+    # 방명록이 작성된 페이지의 주인
+    target_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='guestbooks')
+    # 방명록을 쓴 사람
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at'] # 최신순 정렬
