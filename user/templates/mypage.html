@@ -31,5 +31,40 @@
         <button type="submit" name="change_password" class="btn">비밀번호 변경</button>
     </form>
 </div>
-{% endblock %}
 
+
+<hr style="margin: 40px 0;">
+
+<h2>내 게시물 목록 ({{ my_posts.count }})</h2>
+<div class="my-posts-section">
+    {% if my_posts %}
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr style="border-bottom: 2px solid #eee; text-align: left;">
+                    <th style="padding: 10px;">제목</th>
+                    <th style="padding: 10px;">작성일</th>
+                    <th style="padding: 10px;">조회수</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in my_posts %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 10px;">
+                            <a href="{% url 'post_detail' post.pk %}" style="text-decoration: none; color: #007bff;">
+                                {{ post.title }}
+                            </a>
+                        </td>
+                        <td style="padding: 10px; color: #666; font-size: 0.9em;">
+                            {{ post.created_at|date:"Y-m-d" }}
+                        </td>
+                        <td style="padding: 10px;">{{ post.views }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: #999; padding: 20px 0;">아직 작성한 게시물이 없습니다.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

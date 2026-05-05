@@ -198,6 +198,8 @@ def post_detail(request, pk):
 def mypage_view(request):
     user_form = UserUpdateForm(instance=request.user)
     password_form = PasswordChangeForm(request.user)
+
+    my_posts = Post.objects.filter(author=request.user).order_by('-created_at')
     
     if request.method == 'POST':
         # 회원정보 수정 처리
@@ -224,5 +226,6 @@ def mypage_view(request):
 
     return render(request, 'mypage.html', {
         'user_form': user_form,
-        'password_form': password_form
+        'password_form': password_form,
+        'my_posts': my_posts
     })
