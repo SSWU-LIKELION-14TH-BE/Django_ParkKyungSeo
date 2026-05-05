@@ -5,14 +5,13 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.views.decorators.http import require_POST
 from django.db.models import Count
 from django.contrib import messages
 from .forms import UserUpdateForm, SignUpForm, PostForm
 from .models import CustomUser, Post, Comment
 from django.contrib.auth.decorators import login_required
-
 
 
 # 1. 홈 화면
@@ -229,3 +228,31 @@ def mypage_view(request):
         'password_form': password_form,
         'my_posts': my_posts
     })
+
+@login_required
+def post_update(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if post.author != request.user:
+        raise PermissionDenied # 작성자가 아니면 403 에러 처리
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'post_form.html', {'form': form})
+
+
+# 게시글 삭제
+@require_POST
+@login_required
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if post.author != request.user:
+        raise PermissionDenied
+        
+    post.delete()
+    messages.success(request, "게시물이 삭제되었습니다.")
+    return redirect('post_list')
