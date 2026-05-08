@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.views.decorators.http import require_POST
-from django.db.models import Count
+from django.db.models import Count, F
 
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
@@ -96,6 +96,7 @@ def password_reset_confirm(request):
             
     return render(request, 'password_reset_verify.html')
 
+@login_required
 def post_create(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -179,6 +180,7 @@ def post_list(request):
 
 # 게시물 상세 페이지
 def post_detail(request, pk):
+    # 1. 최적화된 쿼리로 게시물 가져오기
     post = get_object_or_404(
         Post.objects.prefetch_related(
             'comments__replies', 
@@ -189,9 +191,12 @@ def post_detail(request, pk):
         pk=pk
     )
     
-    # 조회수 증가 로직 추가
-    post.views += 1
+    # 2. F() 객체를 사용하여 데이터베이스 레벨에서 조회수 증가 (Race Condition 방지)
+    post.views = F('views') + 1
     post.save(update_fields=['views'])
+    
+    # 3. F() 사용 직후 템플릿에 올바른 숫자를 전달하기 위해 DB로부터 값을 새로고침
+    post.refresh_from_db()
     
     return render(request, 'post_detail.html', {'post': post})
 
