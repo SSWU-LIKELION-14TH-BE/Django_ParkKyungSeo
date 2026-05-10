@@ -21,7 +21,7 @@ def home_view(request):
     return render(request, 'home.html')
 
 def signup_view(request):
-    if request.method == 'POST':
+    if request.method == 'POST': 
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()

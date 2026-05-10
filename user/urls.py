@@ -1,5 +1,6 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+
 
 
 urlpatterns = [
@@ -7,6 +8,7 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    
     
     # 1단계: 이메일 입력 페이지
     path('password-reset/', views.password_reset_view, name='password_reset'),
@@ -28,4 +30,6 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.post_delete, name='post_delete'),
  
     path('guestbook/<str:username>/', views.guestbook_view, name='guestbook'),
+
+
 ]

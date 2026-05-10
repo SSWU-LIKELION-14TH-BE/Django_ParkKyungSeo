@@ -26,7 +26,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user'
+    'user',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.naver',
 ]
 
 MIDDLEWARE = [
@@ -37,6 +42,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'myproject01.urls'
@@ -130,3 +136,30 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # settings.py 맨 아래에 추가
 print(f"CHECK_USER:'{EMAIL_HOST_USER}'")
 print(f"CHECK_PWD: '{EMAIL_HOST_PASSWORD}'")
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+
+# 로그인/로그아웃 리다이렉트
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# 이메일 필수 등 추가 설정
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False # 이메일 중심 로그인 원할 시
+
+# 어댑터 연결
+SOCIALACCOUNT_ADAPTER = 'user.adapter.MySocialAccountAdapter'
+
+# 네이버 데이터 요청 범위 설정
+SOCIALACCOUNT_PROVIDERS = {
+    'naver': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email', 'name', 'nickname', 'birthday', 'birthyear', 'mobile'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+    }
+}
