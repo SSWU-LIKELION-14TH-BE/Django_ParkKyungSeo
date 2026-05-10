@@ -1,4 +1,3 @@
-# settings.py 최상단
 import os
 from pathlib import Path
 from dotenv import load_dotenv 
@@ -7,13 +6,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env')) # 2. .env 파일 경로를 명시적으로 지정
 
-
-
-SECRET_KEY = 'django-insecure-y+cuzqxrsn03)+@yd)o3#5^&ogb2vt)4^)-jmsl-8lu_bc^ai='
-
-# SECURITY WARNING: don't run with debug turned on in production!
+SECRET_KEY='django-insecure-y+cuzqxrsn03)+@yd)o3#5^&ogb2vt)4^)-jmsl-8lu_bc^ai='
 DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -66,8 +60,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'myproject01.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -77,8 +69,7 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -96,47 +87,20 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
+# --- Static & Media 설정 ---
 STATIC_URL = 'static/'
-
-AUTH_USER_MODEL = 'user.CustomUser'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
-
-# 직접 입력된 값을 아래와 같이 환경 변수에서 가져오도록 수정
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = (os.getenv('DEBUG') == 'True')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-
-# 발신자 기본 이메일 설정도 추가해주면 좋습니다.
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-# settings.py 맨 아래에 추가
-print(f"CHECK_USER:'{EMAIL_HOST_USER}'")
-print(f"CHECK_PWD: '{EMAIL_HOST_PASSWORD}'")
+# --- 유저 모델 및 인증 백엔드 ---
+AUTH_USER_MODEL = 'user.CustomUser'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -145,18 +109,34 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-# 로그인/로그아웃 리다이렉트
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# 이메일 필수 등 추가 설정
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False # 이메일 중심 로그인 원할 시
 
-# 어댑터 연결
-SOCIALACCOUNT_ADAPTER = 'user.adapter.MySocialAccountAdapter'
 
-# 네이버 데이터 요청 범위 설정
+
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_UNIQUE_EMAIL = True 
+ACCOUNT_SIGNUP_FIELDS = ['email']
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_QUERY_EMAIL = True 
+SOCIALACCOUNT_EMAIL_REQUIRED = False      
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True 
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+# --- 소셜 프로바이더 설정 ---
 SOCIALACCOUNT_PROVIDERS = {
     'naver': {
         'METHOD': 'oauth2',
@@ -165,8 +145,11 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     'kakao': {
         'METHOD': 'oauth2',
-        'SCOPE': ['profile_nickname', 'profile_image'], 
-        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'SCOPE': ['profile_nickname', 'profile_image'], # 이메일 제외 유지
+        'APP': {
+            'client_id': os.getenv('KAKAO_CLIENT_ID'),     # .env의 변수명과 일치해야 함
+            'secret': os.getenv('KAKAO_CLIENT_SECRET'),
+            'key': ''
+        }
     }
-    
 }

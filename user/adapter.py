@@ -1,11 +1,27 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from .models import CustomUser
 
 class MySocialAccountAdapter(DefaultSocialAccountAdapter):
+    def pre_social_login(self, request, sociallogin):
+        # 이미 등록된 소셜 계정이라면 그대로 진행
+        if sociallogin.is_existing:
+            return
+
+        # 소셜 계정에서 이메일 정보를 가져옴
+        email = sociallogin.user.email
+        if not email:
+            return
+
+        # DB에 동일한 이메일이 있는지 확인하고, 있다면 소셜 계정과 연결
+        try:
+            user = CustomUser.objects.get(email=email)
+            sociallogin.connect(request, user)  # 기존 계정과 소셜 계정 강제 연결
+        except CustomUser.DoesNotExist:
+            pass
+
     def save_user(self, request, sociallogin, form=None):
         # 1. 기본 유저 정보 저장 
         user = super().save_user(request, sociallogin, form)
-        
-        # 2. 네이버에서 넘겨준 상세 데이터(extra_data) 가져오기
         extra_data = sociallogin.account.extra_data
         
         if sociallogin.account.provider == 'naver':
@@ -23,9 +39,10 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             profile = kakao_account.get('profile', {})
             
             user.nickname = profile.get('nickname')
+            user.email = kakao_account.get('email', '')
+
             if hasattr(user, 'profile_image'):
                 user.profile_image = profile.get('profile_image_url')
           
         user.save()
-
         return user
