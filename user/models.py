@@ -7,6 +7,10 @@ class CustomUser(AbstractUser):
     nickname = models.CharField(max_length=50, unique=True, null=True)
     groups = models.ManyToManyField(Group, related_name="customuser_set", blank=True)
     user_permissions = models.ManyToManyField(Permission, related_name="customuser_permissions_set", blank=True)
+    # --- 네이버 API 관련---
+    real_name = models.CharField(max_length=50, blank=True, null=True) # 회원이름
+    birthday = models.CharField(max_length=10, blank=True, null=True)  # 생일 (MM-DD)
+    birthyear = models.CharField(max_length=4, blank=True, null=True)   # 출생연도 (YYYY)
 
 # --- 기술 스택 모델 추가 ---
 class TechStack(models.Model):

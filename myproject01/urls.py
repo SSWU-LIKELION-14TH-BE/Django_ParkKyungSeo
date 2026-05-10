@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')), # users 앱 URL 연결
+    path('accounts/', include('allauth.urls')),
 ]
 
 # 이미지 파일(Media)을 위한 설정 (파일 끝에 추가)

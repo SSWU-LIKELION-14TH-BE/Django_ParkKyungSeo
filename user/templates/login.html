@@ -20,4 +20,17 @@
         <span class="divider">|</span>
         <a href="{% url 'signup' %}">회원가입</a>
     </div>
+
+    {% load socialaccount %}
+
+    <a href="{% provider_login_url 'naver' %}">
+    <img src="https://static.nid.naver.com/oauth/small_g_in.PNG" alt="네이버 로그인">
+    </a>
+    
+    <a href="{% provider_login_url 'kakao' %}">
+    <img src="https://developers.kakao.com/tool/resource/static/img/button/login/full/ko/kakao_login_medium_narrow.png" 
+         alt="카카오 로그인" 
+         style="height: 40px;"> </a>
+
 {% endblock %}
+
