@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.naver',
+    'allauth.socialaccount.providers.naver', #네이버 추가
+    'allauth.socialaccount.providers.kakao', # 카카오 추가
 ]
 
 MIDDLEWARE = [
@@ -161,5 +162,11 @@ SOCIALACCOUNT_PROVIDERS = {
         'METHOD': 'oauth2',
         'SCOPE': ['email', 'name', 'nickname', 'birthday', 'birthyear', 'mobile'],
         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+    },
+    'kakao': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['profile_nickname', 'profile_image'], 
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
     }
+    
 }

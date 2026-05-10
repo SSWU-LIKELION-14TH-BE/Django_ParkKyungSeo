@@ -17,5 +17,15 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             user.birthday = extra_data.get('birthday')       # 생일
             user.birthyear = extra_data.get('birthyear')     # 출생연도
             
-            user.save()
+        elif sociallogin.account.provider == 'kakao':
+            # 카카오 API 응답 구조에 맞게 데이터 추출
+            kakao_account = extra_data.get('kakao_account', {})
+            profile = kakao_account.get('profile', {})
+            
+            user.nickname = profile.get('nickname')
+            if hasattr(user, 'profile_image'):
+                user.profile_image = profile.get('profile_image_url')
+          
+        user.save()
+
         return user
